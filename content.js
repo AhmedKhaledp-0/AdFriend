@@ -1,5 +1,5 @@
 // Inject styles more efficiently
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
   .ad-replacement {
     background-color: #f0f0f0;
@@ -31,34 +31,53 @@ const debounce = (fn, delay) => {
 
 // More efficient ad selectors
 const adSelectors = [
-  'ins.adsbygoogle',
+  "ins.adsbygoogle",
   'iframe[src*="doubleclick.net"]',
   '[id^="google_ads_"]',
   '[id^="ad-"]',
-  '[class^="ad-"]'
-].join(',');
+  '[class^="ad-"]',
+].join(",");
 
 function replaceAd(element) {
   if (processedElements.has(element)) return;
-  
-  const replacementDiv = document.createElement('div');
-  replacementDiv.className = 'ad-replacement';
-  replacementDiv.textContent = 'Ad Removed';
-  
+
+  const replacementDiv = document.createElement("div");
+  replacementDiv.className = "ad-replacement";
+  replacementDiv.textContent = "Loading quote...";
+
+  // Fetch quotes from API
+  fetch("https://dummyjson.com/quotes")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.quotes && data.quotes.length > 0) {
+        const randomQuote =
+          data.quotes[Math.floor(Math.random() * data.quotes.length)];
+        replacementDiv.textContent = `"${randomQuote.quote}"`;
+      } else {
+        replacementDiv.textContent = "No quotes available.";
+      }
+    })
+    .catch(() => {
+      replacementDiv.textContent = "Enjoy an ad-free experience!";
+    });
+
   element.parentNode?.replaceChild(replacementDiv, element);
   processedElements.add(replacementDiv);
 }
 
 const processAds = () => {
   if (document.hidden) return; // Don't process when page is not visible
-  
-  requestIdleCallback(() => {
-    document.querySelectorAll(adSelectors).forEach(element => {
-      if (!processedElements.has(element)) {
-        replaceAd(element);
-      }
-    });
-  }, { timeout: 1000 });
+
+  requestIdleCallback(
+    () => {
+      document.querySelectorAll(adSelectors).forEach((element) => {
+        if (!processedElements.has(element)) {
+          replaceAd(element);
+        }
+      });
+    },
+    { timeout: 1000 }
+  );
 };
 
 // Optimized mutation observer
@@ -66,7 +85,7 @@ const debouncedProcessAds = debounce(processAds, 100);
 
 const observer = new MutationObserver((mutations) => {
   // Only process if new nodes were added
-  if (mutations.some(mutation => mutation.addedNodes.length > 0)) {
+  if (mutations.some((mutation) => mutation.addedNodes.length > 0)) {
     debouncedProcessAds();
   }
 });
@@ -76,17 +95,21 @@ observer.observe(document.body, {
   childList: true,
   subtree: true,
   attributes: false,
-  characterData: false
+  characterData: false,
 });
 
 // Initial scan after DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', processAds, { passive: true });
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", processAds, { passive: true });
 } else {
   processAds();
 }
 
 // Clean up on page unload
-window.addEventListener('unload', () => {
-  observer.disconnect();
-}, { passive: true });
+window.addEventListener(
+  "pagehide",
+  () => {
+    observer.disconnect();
+  },
+  { passive: true }
+);
