@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ad Replacer",
+  "author": "",
   "version": "1.0",
   "description": "Replaces ads with simple div elements",
   "permissions": ["scripting", "activeTab", "storage"],
@@ -13,5 +14,8 @@
 
   "action": {
     "default_popup": "popup.html"
+  },
+  "icons": {
+    "128": "icon128.png"
   }
 }
