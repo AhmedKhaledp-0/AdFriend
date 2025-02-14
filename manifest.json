@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Ad Replacer",
-  "author": "",
+  "name": "AdFriend",
+  "author": "Ctrl Alt Elite",
   "version": "1.0",
   "description": "Replaces ads with simple div elements",
   "permissions": ["scripting", "activeTab", "storage"],
