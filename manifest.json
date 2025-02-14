@@ -1,0 +1,12 @@
+{
+    "manifest_version": 3,
+    "name": "Ad Replacer",
+    "version": "1.0",
+    "description": "Replaces ads with simple div elements",
+    "permissions": ["scripting", "activeTab"],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]      }
+    ]
+  }
